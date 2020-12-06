@@ -91,24 +91,27 @@ export default class Browser extends Command {
       return warningMessage(msg, `Couldn't find any streams for: **${myAnimeListData.title}**`)
     }
 
-    let text = ''
+    const e = new Embed(msg).setTitle(`${myAnimeListData.title}`).setThumbnail(myAnimeListData.image)
 
     if (sortedSites.subs.length) {
-      text += `**Subbed Streams**\n`
+      let text = ''
 
       for (const sub of sortedSites.subs) {
         text += `[${sub.website}](${sub.url})\n`
       }
+      e.addField('Subbed Streams', text, true)
     }
 
     if (sortedSites.dubs.length) {
-      text += `\n**Dubbed Streams**\n`
+      let text = ''
 
       for (const dub of sortedSites.dubs) {
         text += `[${dub.website}](${dub.url})\n`
       }
+
+      e.addField('Dubbed Streams', text, true)
     }
 
-    return msg.channel.send(new Embed(msg).setTitle(`${myAnimeListData.title}`).setThumbnail(myAnimeListData.image).setDescription(text))
+    return msg.channel.send(e)
   }
 }
