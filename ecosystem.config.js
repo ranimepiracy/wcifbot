@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'satania-bot',
+      name: 'wcif-bot',
       script: 'dist/index.js',
       instances: 1,
       autorestart: true,

@@ -21,7 +21,7 @@ getClientConfig().then(async (config) => {
 client.once('ready', async () => {
   Log.header('WCIF Bot').green()
   Log.ok(`Connected as [ ${client.user.tag} ]`)
-  client.user.setActivity({ name: `${client.config.prefix}`, type: 'LISTENING' })
+  client.user.setActivity({ name: `${client.config.prefix}help`, type: 'LISTENING' })
   client.commandHandler = new CommandHandler().init()
   loadEvents(client)
 

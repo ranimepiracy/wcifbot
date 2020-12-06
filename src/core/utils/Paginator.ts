@@ -41,8 +41,8 @@ export class Paginator {
     this.totalPages = pages.length
 
     this.reactions = {
-      previousPage: '⏩',
-      nextPage: '⏪'
+      previousPage: '⬅',
+      nextPage: '➡'
     }
 
     // Timeout time in milliseconds to stop listening for reactions
