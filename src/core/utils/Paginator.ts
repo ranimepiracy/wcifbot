@@ -78,7 +78,7 @@ export class Paginator {
    */
   private async select(page = 1) {
     this.page = page
-    const footerText = `Page ${this.page}/${this.totalPages} | ${this.footerText}`
+    const footerText = `Page ${this.page}/${this.totalPages} ${this.footerText}`
     await this.msg.edit(this.pages[page - 1].setFooter(footerText, this.pages[page - 1].customImage || ''))
   }
 
