@@ -4,6 +4,7 @@ import fetch from 'node-fetch'
 import { Command } from '../core/Command'
 import { Embed } from '../core/utils/Embed'
 import { warningMessage } from '../core/utils/messageUtils'
+import { Paginator } from '../core/utils/Paginator'
 
 export default class Browser extends Command {
   public constructor() {
@@ -87,31 +88,32 @@ export default class Browser extends Command {
     const dubsAvailable = sortedSites.dubs.length
     const subsAvailable = sortedSites.subs.length
 
+    let noDubsOrSubsMessage = ''
+
     if (!dubsAvailable || !subsAvailable) {
-      return warningMessage(msg, `Couldn't find any streams for: **${myAnimeListData.title}**`)
+      noDubsOrSubsMessage = `There were no ${!dubsAvailable ? 'dubbed' : subsAvailable ? 'subbed' : ''} streams found.`
     }
 
-    const e = new Embed(msg).setTitle(`${myAnimeListData.title}`).setThumbnail(myAnimeListData.image)
-
     if (sortedSites.subs.length) {
-      let text = ''
+      let text = `Found **${sortedSites.subs.length}** sites that have subbed streams:\n`
 
       for (const sub of sortedSites.subs) {
         text += `[${sub.website}](${sub.url})\n`
       }
-      e.addField('Subbed Streams', text, true)
+
+      embedList.push(new Embed(msg).setTitle(`${myAnimeListData.title} - Sub`).setThumbnail(myAnimeListData.image).setDescription(text))
     }
 
     if (sortedSites.dubs.length) {
-      let text = ''
+      let text = `Found **${sortedSites.dubs.length}** sites that have dubbed streams:\n`
 
       for (const dub of sortedSites.dubs) {
         text += `[${dub.website}](${dub.url})\n`
       }
 
-      e.addField('Dubbed Streams', text, true)
+      embedList.push(new Embed(msg).setTitle(`${myAnimeListData.title} - Dub`).setThumbnail(myAnimeListData.image).setDescription(text))
     }
 
-    return msg.channel.send(e)
+    return new Paginator(msg, embedList, noDubsOrSubsMessage).send()
   }
 }
