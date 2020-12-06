@@ -36,11 +36,12 @@ export default class Browser extends Command {
       mediaID = match[2]
     }
 
-    console.log(mediaType)
-    console.log(mediaID)
-
     if (!mediaType || !mediaID) {
       return warningMessage(msg, `Please provide a valid MAL link for me to find streams for.`)
+    }
+
+    if (mediaType !== 'anime') {
+      return warningMessage(msg, 'Manga is not currently supported.')
     }
 
     const fetchSteamingSites = async () => {
@@ -65,18 +66,20 @@ export default class Browser extends Command {
     }
 
     for (const site of websiteNames) {
-      const siteData = streamingSites[site]
-      const streamNames = Object.keys(siteData)
+      if (site.toLowerCase() !== 'crunchyroll') {
+        const siteData = streamingSites[site]
+        const streamNames = Object.keys(siteData)
 
-      for (const stream of streamNames) {
-        const streamInfo = {
-          website: site,
-          url: siteData[stream].url,
-          dub: siteData[stream].title.toLowerCase().includes('dub')
+        for (const stream of streamNames) {
+          const streamInfo = {
+            website: site,
+            url: siteData[stream].url,
+            dub: siteData[stream].title.toLowerCase().includes('dub')
+          }
+
+          if (streamInfo.dub) sortedSites.dubs.push(streamInfo)
+          else sortedSites.subs.push(streamInfo)
         }
-
-        if (streamInfo.dub) sortedSites.dubs.push(streamInfo)
-        else sortedSites.subs.push(streamInfo)
       }
     }
 
@@ -91,16 +94,6 @@ export default class Browser extends Command {
       noDubsOrSubsMessage = `There were no ${!dubsAvailable ? 'dubbed' : subsAvailable ? 'subbed' : ''} streams found.`
     }
 
-    if (sortedSites.dubs.length) {
-      let text = `Found **${sortedSites.dubs.length}** sites that have dubbed streams:\n`
-
-      for (const dub of sortedSites.dubs) {
-        text += `[${dub.website}](${dub.url})\n`
-      }
-
-      embedList.push(new Embed(msg).setTitle(`${myAnimeListData.title} - Dub`).setThumbnail(myAnimeListData.image).setDescription(text))
-    }
-
     if (sortedSites.subs.length) {
       let text = `Found **${sortedSites.subs.length}** sites that have subbed streams:\n`
 
@@ -109,6 +102,16 @@ export default class Browser extends Command {
       }
 
       embedList.push(new Embed(msg).setTitle(`${myAnimeListData.title} - Sub`).setThumbnail(myAnimeListData.image).setDescription(text))
+    }
+
+    if (sortedSites.dubs.length) {
+      let text = `Found **${sortedSites.dubs.length}** sites that have dubbed streams:\n`
+
+      for (const dub of sortedSites.dubs) {
+        text += `[${dub.website}](${dub.url})\n`
+      }
+
+      embedList.push(new Embed(msg).setTitle(`${myAnimeListData.title} - Dub`).setThumbnail(myAnimeListData.image).setDescription(text))
     }
 
     return new Paginator(msg, embedList, noDubsOrSubsMessage).send()
